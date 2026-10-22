@@ -71,6 +71,9 @@ public class HunterLoadout : NetworkBehaviour {
     // Fires on every peer when the items in the slots change.
     public event Action OnItemsChanged;
 
+    // The held model built for a slot (null for empty slots).
+    public GameObject ViewModel(int slot) => slot >= 0 && slot < SlotCount ? viewModels[slot] : null;
+
     public int CageCount(int slot) => slot >= 0 && slot < SlotCount ? cageCounts[slot] : 0;
 
     public int WalkieCalls(int slot) => slot >= 0 && slot < SlotCount ? walkieCalls[slot] : 0;

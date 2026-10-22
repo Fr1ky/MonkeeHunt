@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinition
   displayName: Net Launcher
   viewModelPrefab: {fileID: 2511000519902024794, guid: 7841589942574764e8991a9236f3d659, type: 3}
-  equipTime: 0.25
+  equipTime: 0.15
   adjustableZoom: 0
   minZoom: 2
   maxZoom: 8
@@ -30,9 +30,9 @@ MonoBehaviour:
   cooldown: 1.2
   magazineSize: 6
   reserveAmmo: 32
-  reloadTime: 2
+  reloadTime: 1.5
   cameraKick: 3
-  fireSound: {fileID: 8300000, guid: 3518bb58dbcb4e84489e0be2adbe4690, type: 3}
+  fireSound: {fileID: 8300000, guid: e2cfb7d0e969d4c47a468ed7591accd2, type: 3}
   dryFireSound: {fileID: 8300000, guid: ef9bff2ee09154c459b40589cb05fcea, type: 3}
   reloadSound: {fileID: 8300000, guid: 6d46e16b614f0c54a9c217d15f1f0bfa, type: 3}
-  pitch: 0.6
+  pitch: 1

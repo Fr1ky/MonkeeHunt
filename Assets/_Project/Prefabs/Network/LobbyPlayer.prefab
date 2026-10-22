@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4940838242485077845}
+  - component: {fileID: 4302765942990249304}
   m_Layer: 6
   m_Name: ViewSocket
   m_TagString: Untagged
@@ -31,6 +32,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3599006780697196985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4302765942990249304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124983565091316580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad0b8341f7afe64e9718f2c882841c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ViewModelMotion
+  player: {fileID: 8040401177161323384}
+  loadout: {fileID: 1109354854487133674}
+  weapons: {fileID: 5870581003772768727}
+  input: {fileID: 3407224868871298813}
+  movement: {fileID: 474295259120755229}
+  raiseDrop: 0.18
+  raiseTilt: 30
+  punchBack: 0.04
+  punchTilt: 4
+  punchRecoveryRate: 25
+  reloadDrop: 0.08
+  reloadTilt: 20
+  reloadRoll: 15
+  reloadRate: 18
+  swayPerPixel: 0.04
+  maxSway: 2.5
+  swayRate: 10
+  bobStride: 1.6
+  bobSide: 0.012
+  bobUp: 0.01
+  bobRate: 10
 --- !u!1001 &2332181009713668497
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -127,6 +161,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4623862512538067609}
   m_SourcePrefab: {fileID: 100100000, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
+--- !u!114 &474295259120755229 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
+  m_PrefabInstance: {fileID: 2332181009713668497}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662477243785919120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 006467b9ab142e94a880e70ef3c8008f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementController
 --- !u!114 &520837627489209851 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2839503440001100906, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
@@ -375,6 +420,7 @@ MonoBehaviour:
   mouseAim: {fileID: 7617709234297295530}
   audioSource: {fileID: 338697174993174502}
   carry: {fileID: 0}
+  viewMotion: {fileID: 4302765942990249304}
   hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295

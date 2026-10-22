@@ -29,6 +29,8 @@
 | Lifetime / range | 0.5 s (50 m) | 1.5 s (~75 m) | 2 s |
 
 **Changed 2026-10-20:** the net launcher now fires at 30 m/s with gravity ×0.6 and lasts 2.5 s (a level shot lands ~20 m away instead of ~11 m), and the net over a trapped body is a draped rope mesh.
+
+**Changed 2026-10-22 (M9 feel pass, [M9-Plan.md](M9-Plan.md)):** rifle 300 m/s (lifetime 0.17 s, still 50 m), 0.5 s between shots, reload 1.3 s; tranq 80 m/s (lifetime 0.94 s, still ~75 m), reload 1.3 s; net reload 1.5 s; switching takes 0.15 s; the camera kick now recovers.
 | Cooldown between shots | 0.7 s | 0.8 s | 1.2 s |
 | Reload | 1.7 s | 1.75 s | 2.0 s |
 | Camera kick | 2° | 1° | 3° |

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BinocularsDefinition
   displayName: Binoculars
   viewModelPrefab: {fileID: 5969948583420439226, guid: a8ef32e3c20f858448509bad82914b80, type: 3}
-  equipTime: 0.25
+  equipTime: 0.15
   adjustableZoom: 1
   minZoom: 2
   maxZoom: 8

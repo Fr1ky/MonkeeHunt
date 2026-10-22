@@ -26,6 +26,10 @@ public class TestDummy : NetworkBehaviour {
     [SerializeField, Min(1)]
     private int stacksToSleep = 4;
 
+    // Damage total that counts as a kill for the shooter's marker (a monkey's health).
+    [SerializeField, Min(1)]
+    private int downDamage = 40;
+
     [SerializeField]
     private Color flashColor = new Color(1f, 0.35f, 0.25f, 1f);
 
@@ -71,25 +75,31 @@ public class TestDummy : NetworkBehaviour {
         hitCount.onChanged -= OnHit;
     }
 
-    // Server.
-    public void HitServer(WeaponDefinition weapon) {
+    // Server. True when this hit "took the dummy down" like a monkey: reached a monkey's health in
+    // damage, the sleep stack count, or netted it.
+    public bool HitServer(WeaponDefinition weapon) {
         if (!isServer || !weapon) {
-            return;
+            return false;
         }
+        var downed = false;
         switch (weapon.effect) {
             case WeaponEffect.Damage:
+                downed = damageTotal.value < downDamage && damageTotal.value + weapon.effectAmount >= downDamage;
                 lastDamage.value = weapon.effectAmount;
                 damageTotal.value += weapon.effectAmount;
                 break;
             case WeaponEffect.Tranq:
+                downed = stacks.value < stacksToSleep && stacks.value + Mathf.Max(1, weapon.effectAmount) >= stacksToSleep;
                 stacks.value = Mathf.Min(stacksToSleep, stacks.value + Mathf.Max(1, weapon.effectAmount));
                 break;
             case WeaponEffect.Net:
+                downed = !netted.value;
                 netted.value = true;
                 break;
         }
         hitCount.value++;
         resetAtServer = Time.time + resetSeconds;
+        return downed;
     }
 
     private void Update() {

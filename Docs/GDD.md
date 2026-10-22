@@ -159,7 +159,8 @@ Several systems share one minigame: you press a sequence of directions with the 
 - **Projectile speed/range** keep the reference feel but are **scaled to first person** (configurable per gun).
 - **Hit detection:** the **shooter's machine decides** hits and reports them (trusted friends).
 - **Reload:** **R**, plus an **automatic reload** when firing an empty magazine with ammo in reserve.
-- **Recoil:** a small fixed camera kick per shot, no spread (for now).
+- **Recoil:** each shot snaps the view up by a small kick and it springs back to where you aimed. No spread (for now).
+- **Feel (M9):** fast bullets (rifle 300 m/s, tranq 80 m/s), 0.15 s weapon switch, early clicks still fire once the gun is ready, muzzle flash, impact puffs, and a hit marker (plus a bigger one when your hit kills, puts to sleep or nets someone). See [M9-Plan.md](M9-Plan.md).
 - **Aiming:** hold **right mouse** on a gun for a small zoom (~1.3x).
 - **Hunting rifle:** deals **5 damage** per hit.
 - **Tranq gun:** each hit adds a **tranq stack**. Each stack slows the target (walking, climbing and swing pumping alike) and strengthens a **full-screen "drunk" effect**. At **4 stacks** the target falls **asleep**. Stacks wear off one at a time when the target goes a while without being hit.
@@ -221,7 +222,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 
 ### 7.1 Movement
 - **Body:** much smaller than hunters (**~0.55 m** tall) with a low eye height (**~0.45 m**), so monkeys can hide behind low cover. Their step-up height is about 0.22 m, so higher ledges need a jump.
-- **Ground movement:** faster than hunters and jumps much higher (placeholder: another ×1.2 walk/sprint on top of the hunters' speed; a jump reaches **~2 m**, about 3× a hunter's; tunable).
+- **Ground movement:** faster than hunters and jumps much higher (placeholder: another ×1.2 walk/sprint on top of the hunters' speed; a jump reaches **~2.5 m**, against a hunter's 1 m; tunable). Since M9 everyone moves 30% faster (hunters walk 5.5 / sprint 8 m/s, monkeys 6.6 / 9.6 m/s) and falls with heavier gravity, so jumps are snappy.
 - **Hunter speed** (for reference): everyone moves ×1.65 compared to the originally ported controller (walk 148.5, sprint bonus 66 in controller units).
 - **Sprint.**
 - **Climb (monkeys only):** works on any tree and rock tagged as climbable. **Jump while touching** a climbable surface to grab on. Then **W** climbs up, **S** down, **A/D** sideways, and **Jump** leaps off. Climbing is as fast as walking, and **Shift** sprints (same speeds as on the ground). The map borders are the limit for Proto 1.
@@ -290,6 +291,8 @@ Several systems share one minigame: you press a sequence of directions with the 
 - Gameplay sounds that carry information: rock impacts and decoy noises that hunters can hear and track.
 - Screen effects: tranq "drunk" effect, poop splat, head-ride view block.
 - Minigame UI: shows the key sequence, plus the directional prompts for head-ride resistance.
+- **Hit feedback (M9):** getting hit flashes the screen edges red and shows a red arc pointing to the shooter or thrower, with a hurt thud (a squelch for poop). Sprinting widens the view ~6°.
+- **Placeholder sounds (M9):** generated in code (`MonkeeHunt > Generate Placeholder Sounds`) into `Assets/_Project/Audio/Generated`: hit tick, kill confirm, hurt, squelch, impacts, tranq / net shots, jump / land, throw, rock clack, decoy screech. Replace the files with real sounds anytime.
 
 ---
 
@@ -341,7 +344,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 | M6 | Head-ride | Ride, view block, steering, resistance minigame, key stealing |
 | M7 | Hazards & resupply | Quicksand and teammate help, walkie-talkie helicopter resupply (banana trees and peels were done in M4) |
 | M8 | Jungle arena | Blockout of the circular map with ruins, river and canopy |
-| M9 | Playtest polish | Audio, screen effects, tuning pass |
+| M9 | Playtest polish | Audio, screen effects, tuning pass (part 1, the feel pass, built 2026-10-22: [M9-Plan.md](M9-Plan.md)) |
 
 Milestone order and grouping still need your sign-off.
 

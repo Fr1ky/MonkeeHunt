@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WalkieTalkieDefinition
   displayName: Walkie-talkie
   viewModelPrefab: {fileID: 8134409535594844790, guid: 3978e5f83d59d594e90fd771306b1c74, type: 3}
-  equipTime: 0.25
+  equipTime: 0.15
   adjustableZoom: 0
   minZoom: 2
   maxZoom: 8

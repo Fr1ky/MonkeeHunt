@@ -9,6 +9,9 @@ public class HunterWeapons : NetworkBehaviour {
 
     private const float DryFireDelay = 0.2f;
 
+    // A click this early (during the cooldown, a switch or the end of a reload) still fires once ready.
+    private const float FireBufferSeconds = 0.15f;
+
     [SerializeField]
     private HunterLoadout loadout;
 
@@ -28,6 +31,10 @@ public class HunterWeapons : NetworkBehaviour {
     [SerializeField]
     private HunterCarry carry;
 
+    // The hand socket's motion (fire punch).
+    [SerializeField]
+    private ViewModelMotion viewMotion;
+
     [SerializeField]
     private LayerMask hitLayers = ~0;
 
@@ -41,6 +48,7 @@ public class HunterWeapons : NetworkBehaviour {
     private WeaponDefinition reloadingWeapon;
     private float reloadStartTime;
     private float reloadEndTime;
+    private float fireQueuedUntil = -1f;
 
     public WeaponDefinition CurrentWeapon => loadout.Selected as WeaponDefinition;
     public bool IsReloading => reloadingWeapon;
@@ -136,14 +144,18 @@ public class HunterWeapons : NetworkBehaviour {
         if (input.ReloadPressed) {
             StartReload(weapon);
         }
-        if (input.AttackPressed && !(carry && carry.IsCarrying)) {
-            TryFire(weapon);
+        if (input.AttackPressed) {
+            fireQueuedUntil = Time.time + FireBufferSeconds;
+        }
+        if (Time.time <= fireQueuedUntil && !(carry && carry.IsCarrying) && TryFire(weapon)) {
+            fireQueuedUntil = -1f;
         }
     }
 
-    private void TryFire(WeaponDefinition weapon) {
+    // False while the gun isn't ready yet (the click stays queued); true once it fired, reloaded or clicked dry.
+    private bool TryFire(WeaponDefinition weapon) {
         if (IsReloading || !loadout.IsEquipReady || Time.time < nextFireTime) {
-            return;
+            return false;
         }
         var state = StateFor(weapon);
         if (state.Magazine <= 0) {
@@ -153,7 +165,7 @@ public class HunterWeapons : NetworkBehaviour {
                 PlaySound(weapon.dryFireSound, weapon.pitch);
                 nextFireTime = Time.time + DryFireDelay;
             }
-            return;
+            return true;
         }
 
         state.Magazine--;
@@ -162,8 +174,10 @@ public class HunterWeapons : NetworkBehaviour {
         var slot = loadout.SelectedSlot;
         SpawnProjectile(weapon, ray.origin, ray.direction, (hitCollider, point) => OnOwnProjectileHit(slot, hitCollider));
         PlaySound(weapon.fireSound, weapon.pitch);
+        PlayFireEffects(slot, weapon);
         mouseAim.Kick(weapon.cameraKick);
         FireServer(slot, ray.origin, ray.direction);
+        return true;
     }
 
     private void StartReload(WeaponDefinition weapon) {
@@ -190,6 +204,7 @@ public class HunterWeapons : NetworkBehaviour {
     }
 
     private void OnSelectionChanged(int slot) {
+        fireQueuedUntil = -1f;
         // Switching away cancels a reload in progress.
         if (IsReloading && loadout.Selected != reloadingWeapon) {
             reloadingWeapon = null;
@@ -206,6 +221,7 @@ public class HunterWeapons : NetworkBehaviour {
         }
         var dummy = hitCollider.GetComponentInParent<TestDummy>();
         if (dummy) {
+            HitMarkerHud.Show(HitMarkerKind.Hit);
             ReportDummyHit(dummy, slot);
             return;
         }
@@ -217,6 +233,8 @@ public class HunterWeapons : NetworkBehaviour {
         if (!target || target.gameObject == gameObject) {
             return;
         }
+        // Another hunter = friendly fire.
+        HitMarkerHud.Show(target.GetComponent<HunterLoadout>() ? HitMarkerKind.Friendly : HitMarkerKind.Hit);
         ReportHit(target, slot);
     }
 
@@ -230,6 +248,7 @@ public class HunterWeapons : NetworkBehaviour {
         if (loadout.GetSlot(slot) is WeaponDefinition weapon) {
             SpawnProjectile(weapon, origin, direction, null);
             PlaySound(weapon.fireSound, weapon.pitch);
+            PlayFireEffects(slot, weapon);
         }
     }
 
@@ -238,14 +257,38 @@ public class HunterWeapons : NetworkBehaviour {
         if (HunterLoadout.InHub || !target || loadout.GetSlot(slot) is not WeaponDefinition weapon) {
             return;
         }
-        WeaponEffects.ApplyServer(weapon, target.gameObject);
+        // Before the effect: a killing hit despawns the target.
+        if (target.TryGetComponent(out HitFeedback feedback)) {
+            feedback.NotifyServer(transform.position, HitFeedbackKind.Hurt);
+        }
+        if (WeaponEffects.ApplyServer(weapon, target.gameObject) && owner.HasValue) {
+            ConfirmDown(owner.Value);
+        }
     }
 
     [ServerRpc]
     private void ReportDummyHit(NetworkIdentity dummyIdentity, int slot) {
         var dummy = dummyIdentity ? dummyIdentity.GetComponent<TestDummy>() : null;
-        if (dummy && loadout.GetSlot(slot) is WeaponDefinition weapon) {
-            dummy.HitServer(weapon);
+        if (dummy && loadout.GetSlot(slot) is WeaponDefinition weapon && dummy.HitServer(weapon) && owner.HasValue) {
+            ConfirmDown(owner.Value);
+        }
+    }
+
+    // The shooter's big marker: the hit killed, put to sleep or netted its target.
+    [TargetRpc]
+    private void ConfirmDown(PlayerID target) {
+        HitMarkerHud.Show(HitMarkerKind.Down);
+    }
+
+    // Muzzle flash on the gun model and the hand socket's punch (every peer).
+    private void PlayFireEffects(int slot, WeaponDefinition weapon) {
+        var model = loadout.ViewModel(slot);
+        var muzzle = model ? model.GetComponentInChildren<MuzzleFlash>(true) : null;
+        if (muzzle) {
+            muzzle.Play();
+        }
+        if (viewMotion) {
+            viewMotion.Punch(weapon.cameraKick * 0.5f);
         }
     }
 

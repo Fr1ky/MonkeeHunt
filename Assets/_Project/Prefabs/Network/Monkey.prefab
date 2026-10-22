@@ -147,8 +147,8 @@ PrefabInstance:
       value: 0.305
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
-      propertyPath: jumpStrength
-      value: 322
+      propertyPath: jumpHeight
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: sphereRadius
@@ -156,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: movementSpeed
-      value: 178.2
+      value: 231.66
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: rideSpringHeight
@@ -164,7 +164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: sprintingSpeedBonus
-      value: 79.2
+      value: 102.96
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: groundCheckRayLength
@@ -490,7 +490,7 @@ MonoBehaviour:
   gripOffset: {x: 0, y: 0.3, z: 0}
   ropeVisual: {fileID: 2254712474499854588}
   grabRange: 3
-  pumpAcceleration: 12
+  pumpAcceleration: 15.6
   releaseUpBoost: 2
   minRopeLength: 0.75
   airControlDelay: 0.6
@@ -563,7 +563,7 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  chargeSeconds: 1
+  chargeSeconds: 0.6
   spawnForward: 0.3
   rockFlinchDegrees: 3
   groundPeelPrefab: {fileID: 2535007563740236388, guid: aa3ceea719d9deb4985320f7be1434ea, type: 3}

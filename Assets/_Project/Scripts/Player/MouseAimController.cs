@@ -23,7 +23,19 @@ public class MouseAimController : MonoBehaviour {
     [SerializeField]
     private float lookSensitivity = 0.15f;
 
+    // Recoil / flinch: the view snaps up by the kick and springs back to where the player aimed.
+    // Rates are per second (exponential approach): rise ~0.05 s, recovery ~0.3 s.
+    [SerializeField]
+    private float kickRiseRate = 60f;
+
+    [SerializeField]
+    private float kickRecoveryRate = 9f;
+
     private float xRotation = 0f;
+
+    // Degrees up: the target springs back to 0, the applied offset chases it.
+    private float kickTarget;
+    private float kickOffset;
 
     private bool locked;
 
@@ -57,9 +69,9 @@ public class MouseAimController : MonoBehaviour {
         lookScale = Mathf.Max(0.01f, scale);
     }
 
-    // Simple fixed upward kick per shot (no recovery yet).
+    // Upward view kick (gun recoil, rock flinch) that recovers on its own.
     public void Kick(float degrees) {
-        xRotation = Mathf.Clamp(xRotation - degrees, -80f, 80f);
+        kickTarget += degrees;
     }
 
     public Ray GetCameraRay() {
@@ -67,8 +79,20 @@ public class MouseAimController : MonoBehaviour {
     }
 
     void LateUpdate() {
+        var dt = Time.deltaTime;
+        var kicking = kickTarget > 0.001f || kickOffset > 0.001f;
+        if (kicking) {
+            kickOffset = Mathf.Lerp(kickOffset, kickTarget, 1f - Mathf.Exp(-kickRiseRate * dt));
+            kickTarget = Mathf.Lerp(kickTarget, 0f, 1f - Mathf.Exp(-kickRecoveryRate * dt));
+        } else {
+            kickTarget = kickOffset = 0f;
+        }
 
         if (locked || blocked) {
+            // Look is frozen, but a kick in progress still plays out and recovers.
+            if (kicking) {
+                ApplyPitch();
+            }
             return;
         }
 
@@ -80,9 +104,13 @@ public class MouseAimController : MonoBehaviour {
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80, 80f);
-        head.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        ApplyPitch();
 
         characterVisualisationRoot.Rotate(Vector3.up * mouseX);
+    }
+
+    private void ApplyPitch() {
+        head.localRotation = Quaternion.Euler(Mathf.Clamp(xRotation - kickOffset, -85f, 85f), 0f, 0f);
     }
 
 }

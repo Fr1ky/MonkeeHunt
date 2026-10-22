@@ -135,3 +135,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30991349a4c14a47b724a01f33154c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
+  impactWorld: {fileID: 1647209701646131690, guid: 58bc24d7deea7b643a92555322d80d95, type: 3}
+  impactBody: {fileID: 0}

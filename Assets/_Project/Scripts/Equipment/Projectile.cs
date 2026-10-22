@@ -18,9 +18,17 @@ public struct ProjectileMotion {
 
 // Local-only projectile (not networked). The shooter's copy is authoritative and reports hits via
 // onHit; everyone else spawns a cosmetic copy (onHit = null) that just flies and disappears.
+// Every copy plays its impact effect where it lands (one for players and dummies, one for the world).
 public class Projectile : MonoBehaviour {
 
     private const int MaxHitsPerStep = 8;
+
+    [SerializeField]
+    private GameObject impactWorld;
+
+    // Falls back to impactWorld when empty.
+    [SerializeField]
+    private GameObject impactBody;
 
     private readonly RaycastHit[] hits = new RaycastHit[MaxHitsPerStep];
     private ProjectileMotion motion;
@@ -57,6 +65,7 @@ public class Projectile : MonoBehaviour {
         var distance = step.magnitude;
         if (distance > 0f && TryHit(step / distance, distance, out var hit)) {
             transform.position = hit.point;
+            SpawnImpact(hit);
             onHit?.Invoke(hit.collider, hit.point);
             Destroy(gameObject);
             return;
@@ -82,6 +91,7 @@ public class Projectile : MonoBehaviour {
             // Casts that start overlapping report distance 0 / point zero; treat as a hit at the start.
             if (hit.distance <= 0f) {
                 hit.point = transform.position;
+                hit.normal = -direction;
             }
             if (!found || hit.distance < nearest.distance) {
                 nearest = hit;
@@ -89,5 +99,16 @@ public class Projectile : MonoBehaviour {
             }
         }
         return found;
+    }
+
+    // The effect faces out of the surface it hit.
+    private void SpawnImpact(RaycastHit hit) {
+        var isBody = hit.collider.GetComponentInParent<PlayerHealth>() || hit.collider.GetComponentInParent<TestDummy>();
+        var prefab = isBody && impactBody ? impactBody : impactWorld;
+        if (!prefab) {
+            return;
+        }
+        var normal = hit.normal.sqrMagnitude > 0.5f ? hit.normal : -velocity.normalized;
+        Instantiate(prefab, hit.point, Quaternion.LookRotation(normal));
     }
 }

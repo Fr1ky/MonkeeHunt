@@ -105,6 +105,8 @@ public class MonkeyThrow : NetworkBehaviour {
             case MonkeyItem.Poop:
                 var splatTarget = hitCollider.GetComponentInParent<SplatStatus>();
                 if (splatTarget && splatTarget.gameObject != gameObject) {
+                    // Another monkey = friendly fire.
+                    HitMarkerHud.Show(splatTarget.GetComponent<HunterLoadout>() ? HitMarkerKind.Hit : HitMarkerKind.Friendly);
                     ReportPoopHit(splatTarget);
                 }
                 break;
@@ -118,6 +120,10 @@ public class MonkeyThrow : NetworkBehaviour {
                 RockLanded(point);
                 var target = hitCollider.GetComponentInParent<PlayerFlinch>();
                 if (target && target.gameObject != gameObject) {
+                    // Rocks only affect hunters, so only they get a marker.
+                    if (target.GetComponent<HunterLoadout>()) {
+                        HitMarkerHud.Show(HitMarkerKind.Hit);
+                    }
                     ReportRockHit(target);
                 }
                 break;
@@ -183,6 +189,9 @@ public class MonkeyThrow : NetworkBehaviour {
     private void ReportPoopHit(NetworkIdentity target) {
         if (target && target.TryGetComponent(out SplatStatus splat)) {
             splat.AddSplatServer();
+            if (target.TryGetComponent(out HitFeedback feedback)) {
+                feedback.NotifyServer(transform.position, HitFeedbackKind.Splat);
+            }
         }
     }
 
@@ -191,6 +200,9 @@ public class MonkeyThrow : NetworkBehaviour {
         // Rocks only jolt hunters.
         if (target && target.TryGetComponent(out PlayerFlinch flinch) && target.TryGetComponent(out HunterLoadout _)) {
             flinch.FlinchServer(rockFlinchDegrees);
+            if (target.TryGetComponent(out HitFeedback feedback)) {
+                feedback.NotifyServer(transform.position, HitFeedbackKind.Hurt);
+            }
         }
     }
 

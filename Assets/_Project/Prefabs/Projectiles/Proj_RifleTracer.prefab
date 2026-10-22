@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30991349a4c14a47b724a01f33154c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
+  impactWorld: {fileID: 601127790044424054, guid: 3b8b511174df3694eb2e7a46676458f5, type: 3}
+  impactBody: {fileID: 1761202347848009038, guid: 3d89a79b1309f294da49341333917f4b, type: 3}
 --- !u!1 &4485168490206247718
 GameObject:
   m_ObjectHideFlags: 0

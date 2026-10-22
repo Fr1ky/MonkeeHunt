@@ -61,7 +61,7 @@ MonoBehaviour:
   playerLayers:
     serializedVersion: 2
     m_Bits: 64
-  screechSound: {fileID: 0}
+  screechSound: {fileID: 8300000, guid: 7be433ddaea039844a24eff618a87ad9, type: 3}
   visual: {fileID: 7912875986818824097}
   despawnDelay: 0.25
 --- !u!1 &7912875986818824097

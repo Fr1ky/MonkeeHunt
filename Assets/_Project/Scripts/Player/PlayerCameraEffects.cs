@@ -16,6 +16,17 @@ public class PlayerCameraEffects : MonoBehaviour {
     [SerializeField]
     private float zoomSpeed = 12f;
 
+    // Sprinting widens the view by this much (degrees) on top of the base FOV; aiming zoom overrides it.
+    [Header("Sprint")]
+    [SerializeField]
+    private PlayerMovementController movement;
+
+    [SerializeField]
+    private float sprintFovKick = 6f;
+
+    [SerializeField]
+    private float sprintFovRate = 20f;
+
     [Header("Drunk")]
     [SerializeField]
     private float maxRoll = 8f;
@@ -32,6 +43,7 @@ public class PlayerCameraEffects : MonoBehaviour {
     private float drunkLevel;
     private float zoomFov;
     private float currentFov;
+    private float sprintAmount;
 
     // The player's field-of-view setting (Esc menu); the serialized value is only the fallback.
     public float BaseFov => LocalPlayerProfile.Fov > 1f ? LocalPlayerProfile.Fov : baseFov;
@@ -58,7 +70,12 @@ public class PlayerCameraEffects : MonoBehaviour {
         var swayPitch = Mathf.Sin(t * 1.1f) * maxSway * 0.6f * drunkLevel;
         playerCamera.transform.localRotation = Quaternion.Euler(swayPitch, swayYaw, roll);
 
-        var targetFov = zoomFov > 0f ? zoomFov : BaseFov;
+        // Only while actually moving faster than a walk (not when slowed or pushing into a wall).
+        var sprinting = movement && movement.SprintRequested
+            && movement.FlatSpeed > movement.GroundSpeed(false) * movement.SpeedMultiplier * 1.05f;
+        sprintAmount = Mathf.Lerp(sprintAmount, sprinting ? 1f : 0f, 1f - Mathf.Exp(-sprintFovRate * Time.deltaTime));
+
+        var targetFov = zoomFov > 0f ? zoomFov : BaseFov + sprintFovKick * sprintAmount;
         currentFov = Mathf.Lerp(currentFov, targetFov, 1f - Mathf.Exp(-zoomSpeed * Time.deltaTime));
         playerCamera.fieldOfView = currentFov + Mathf.Sin(t * 1.7f) * maxFovWobble * drunkLevel;
     }

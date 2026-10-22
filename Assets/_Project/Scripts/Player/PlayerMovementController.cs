@@ -24,11 +24,24 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     [SerializeField]
     private float sprintingSpeedBonus = 40f;
 
-    [SerializeField]
-    private float jumpStrength = 180f;
+    // Jump apex above the float height, in metres. The launch speed is worked out from it.
+    [SerializeField, Min(0f)]
+    private float jumpHeight = 1f;
+
+    // Gravity multipliers while airborne under normal movement (snappier arcs). Off while the float
+    // spring holds the body, and whenever this controller is disabled (climbing, swinging, launches).
+    [SerializeField, Min(1f)]
+    private float riseGravityScale = 1.5f;
+
+    [SerializeField, Min(1f)]
+    private float fallGravityScale = 2f;
 
     [SerializeField]
     private float coyoteTime = 0.1f;
+
+    // A jump pressed this long before landing still happens on landing.
+    [SerializeField, Min(0f)]
+    private float jumpBufferTime = 0.12f;
 
     [SerializeField]
     private float climbingSpeed = 100f;
@@ -63,12 +76,27 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     // target step; together they settle at speed * fixedDeltaTime / BrakeFactor (see GroundSpeed).
     private const float BrakeFactor = 0.7f;
 
-    private float jumpCD = 0.5f;
+    private float jumpCD = 0.25f;
     private float currentJumpCD = 0f;
     private float currentCoyoteTime = 0f;
     private bool canJump = false;
+    private float lastJumpPressTime = float.NegativeInfinity;
+
+    // v = sqrt(2gh), plus half a physics step of gravity: the stepped simulation would otherwise
+    // fall short of the apex by v * fixedDeltaTime / 2 (~5 cm).
+    private float JumpSpeed
+    {
+        get
+        {
+            var gravity = -Physics.gravity.y * riseGravityScale;
+            return Mathf.Sqrt(2f * gravity * jumpHeight) + 0.5f * gravity * Time.fixedDeltaTime;
+        }
+    }
 
     private bool grounded = false;
+    private bool wasGrounded = true;
+    private float airborneTime;
+    private float airborneMinVelocityY;
 
     private Vector3 movementVector;
 
@@ -91,6 +119,28 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     private bool steered;
     private Vector3 steerPush;
     private float steerOwnWeight = 1f;
+
+    public bool IsGrounded => grounded;
+
+    // Horizontal speed of the body in m/s.
+    public float FlatSpeed
+    {
+        get
+        {
+            var velocity = body.linearVelocity;
+            velocity.y = 0f;
+            return velocity.magnitude;
+        }
+    }
+
+    // Sprint held while moving under the player's own control (not steered by a rider).
+    public bool SprintRequested => enabled && !locked && !blocked && !steered && !isClimbing
+        && input.SprintHeld && input.Move.sqrMagnitude > 0.01f;
+
+    public event System.Action OnJumped;
+
+    // Downward speed (m/s) at touchdown, after at least a short time in the air.
+    public event System.Action<float> OnLanded;
 
     public void SetSteer(Vector3 worldPush, float ownInputWeight)
     {
@@ -153,10 +203,19 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     {
         this.isClimbing = isClimbing;
     }
+    private void OnEnable()
+    {
+        // A press from before climbing / swinging / a launch must not fire later.
+        lastJumpPressTime = float.NegativeInfinity;
+    }
+
     private void Update()
     {
 
         grounded = Physics.Raycast(this.transform.position, Vector3.down, groundCheckRayLength, walkableLayers, QueryTriggerInteraction.Ignore);
+        TrackLanding();
+        // Counts down even while locked or blocked: the float spring stays off until it runs out.
+        currentJumpCD -= Time.deltaTime;
 
         if (locked || blocked)
         {
@@ -225,14 +284,22 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
         {
             currentCoyoteTime -= Time.deltaTime;
         }
-        if (input.JumpPressed && currentCoyoteTime >= 0 && canJump)
+        if (input.JumpPressed)
         {
-            body.AddForce((Vector3.up * body.linearVelocity.y) + (Vector3.up * jumpStrength), ForceMode.Acceleration);
+            lastJumpPressTime = Time.time;
+        }
+        var jumpQueued = Time.time - lastJumpPressTime <= jumpBufferTime;
+        if (jumpQueued && currentCoyoteTime >= 0 && canJump)
+        {
+            var velocity = body.linearVelocity;
+            velocity.y = JumpSpeed;
+            body.linearVelocity = velocity;
             canJump = false;
             currentJumpCD = jumpCD;
+            lastJumpPressTime = float.NegativeInfinity;
+            OnJumped?.Invoke();
         }
 
-        currentJumpCD -= Time.deltaTime;
         //Maybe change in case of double jump?
         if (currentJumpCD <= 0 && grounded)
         {
@@ -240,6 +307,25 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
         }
     }
 
+
+    // Short dips between stair steps don't count as a landing.
+    private void TrackLanding()
+    {
+        if (!grounded)
+        {
+            airborneTime += Time.deltaTime;
+            airborneMinVelocityY = Mathf.Min(airborneMinVelocityY, body.linearVelocity.y);
+        } else if (!wasGrounded && airborneTime > 0.15f)
+        {
+            OnLanded?.Invoke(-airborneMinVelocityY);
+        }
+        if (grounded)
+        {
+            airborneTime = 0f;
+            airborneMinVelocityY = 0f;
+        }
+        wasGrounded = grounded;
+    }
 
     private void HandleFloating()
     {
@@ -315,6 +401,14 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
         var newVelocity = (tempVelocity - (bodyVelocity * BrakeFactor)) / Time.fixedDeltaTime;
         var rayForce = rayDir * force;
         var desiredMoveDir = newVelocity + rayForce;
+
+        // Heavier gravity in the air; the spring alone handles the body near the ground.
+        var springHolding = floatingRay && currentJumpCD <= 0;
+        if (!springHolding && body.useGravity)
+        {
+            var gravityScale = body.linearVelocity.y > 0f ? riseGravityScale : fallGravityScale;
+            desiredMoveDir += Physics.gravity * (gravityScale - 1f);
+        }
 
         body.AddForce(desiredMoveDir, ForceMode.Acceleration);
     }

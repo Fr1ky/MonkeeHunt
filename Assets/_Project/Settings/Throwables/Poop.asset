@@ -20,5 +20,5 @@ MonoBehaviour:
   gravityScale: 0.7
   lifetime: 5
   radius: 0.12
-  throwSound: {fileID: 0}
+  throwSound: {fileID: 8300000, guid: 2ffe98b45a6432c4aa356c5af3e34e40, type: 3}
   impactSound: {fileID: 0}
