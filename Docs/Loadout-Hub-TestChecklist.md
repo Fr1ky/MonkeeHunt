@@ -27,6 +27,14 @@ Everything here was checked as host with stand-in bodies and direct calls, but n
 - [ ] **No friendly fire in the hub:** shooting or netting the other player in the hub does nothing.
 - [ ] **Two players:** each sees the other's held item change when they pick from the rack or switch slots; each sees the dummies react to the other's shots.
 
+## B2. Hub monkey (added 2026-10-23)
+- [ ] **Swap:** stepping onto the Monkeys square turns you into a real monkey right where you stand (small, fast, 3.25 m jumps), still facing the same way. Others see the swap too.
+- [ ] **Swap back:** the Hunters square turns you back into the hunter body with your loadout; Spectate keeps the hunter body with the kit off.
+- [ ] **Monkey corner:** climb both trees, jump to the swing points and swing, pick up a rock (E), a fruit and a banana, eat (F).
+- [ ] **Practice rules:** poop and rocks on a dummy show "Splat" / "Rock" and the hit marker; nothing gets used up; peels and decoys only puff; poop on another player does nothing; rocks clack.
+- [ ] **Walls:** you can't jump or climb out of the room.
+- [ ] **Round start from the Monkeys side:** you spawn as a round monkey as before.
+
 ## C. Settings (Esc menu)
 - [ ] **Open:** Esc → "Settings" under Resume opens the sliders panel beside the menu.
 - [ ] **Sensitivity / FOV / volume** change immediately (look speed, view width, sound).

@@ -67,6 +67,13 @@
   - "1 call" / "1 cage" singular on the HUD.
 - Not tested as host: real E / G / number-key presses, two players seeing each other's held items in the hub, saved values surviving a full restart of the game (cleared after testing).
 
+## Hub monkey (added 2026-10-23, your call)
+- Stepping onto the **Monkeys** square swaps the hub body **in place** to the real `Monkey` prefab (the hub's TeamSpawner has `swapBodyOnTeamChange` on and uses Monkey for the Monkeys side). Spectate and Hunters keep the `LobbyPlayer` body; stepping back swaps back. Your facing is kept.
+- **Practice rules** (decided): the full monkey kit works, but throws only affect the dummies (poop → "Splat xN", rock → "Rock xN", with the hit marker), rocks still clack, peels and decoys only puff where they land, and throwing or eating never uses anything up. The monkey starts like in a round (poop 5, decoys 3), so rocks need one pickup and peels one banana.
+- **Monkey corner** (decided) in the south-east quarter: two 5 m climbable trees with two swing points and a vine line between them, a rock pile, a fruit bush and a banana plant, and a "MONKEY CORNER" sign. The hint line explains it.
+- **Small calls (flagged):** a banana plant was added on top of the rock pile and fruit bush so peels can be practised. **Invisible colliders** now cap the 4 m lobby walls up to 20 m: with 3.25 m jumps, monkeys could otherwise jump out of the room from the boxes or the trees.
+- Checked as host: Monkeys square → `Monkey(Clone)` (team Monkeys, 6.6 / 9.6 m/s, 40 HP, one body); jump apex 3.25 m; poop on a dummy → "Splat x1" + marker with poop still 5; a decoy throw placed nothing and stayed at 3; Hunters square → back to `LobbyPlayer` with the kit on; Spectate → kit off, no swap.
+
 ## Suggested build order
 1. Loadout data (items, sync, validation, swap, round spawn).
 2. Hunter kit in the hub + shared HUD + hint line.

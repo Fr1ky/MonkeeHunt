@@ -12,6 +12,9 @@ public class HubHint : MonoBehaviour {
     [SerializeField]
     private string otherText = "Step onto the Hunters square to set up a hunter loadout at the rack";
 
+    [SerializeField]
+    private string monkeyText = "Monkey corner: climb, swing, E picks up, F eats   ·   throws only hit the dummies and never run out";
+
     // Line centre, relative to the bottom of the screen.
     [SerializeField]
     private Vector2 offset = new Vector2(0f, 110f);
@@ -48,8 +51,12 @@ public class HubHint : MonoBehaviour {
         if (!show) {
             return;
         }
-        var hunter = local.TryGetComponent(out PlayerInfo info) && info.Team == Team.Hunters;
-        var text = hunter ? hunterText : otherText;
+        var team = local.TryGetComponent(out PlayerInfo info) ? info.Team : Team.Unassigned;
+        var text = team switch {
+            Team.Hunters => hunterText,
+            Team.Monkeys => monkeyText,
+            _ => otherText
+        };
         if (label.text != text) {
             label.text = text;
         }

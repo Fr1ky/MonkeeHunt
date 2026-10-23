@@ -28,7 +28,7 @@
   - First, **all players move ×1.65** (walk 90 → 148.5, sprint bonus 40 → 66), set on PlayerBase.
   - Monkeys then get **another ×1.2** (walk 178.2, sprint bonus 79.2) and **~60% higher jumps**, set on the Monkey variant.
 - Note: step height (0.45 m) stays the same.
-- **Changed 2026-10-22 (M9 feel pass):** everyone +30% (hunters walk 5.5 / sprint 8.0 m/s, monkeys 6.6 / 9.6 m/s); jumps are set in metres (hunters 1.0 m, monkeys 2.5 m) with heavier gravity in the air (×1.5 rising, ×2 falling); a full-power throw charges in 0.6 s (was 1 s); swing pump +30%.
+- **Changed 2026-10-22 (M9 feel pass):** everyone +30% (hunters walk 5.5 / sprint 8.0 m/s, monkeys 6.6 / 9.6 m/s); jumps are set in metres (hunters 1.0 m, monkeys 2.5 m, raised to 3.25 m on 2026-10-23) with heavier gravity in the air (×1.5 rising, ×2 falling); a full-power throw charges in 0.6 s (was 1 s); swing pump +30%.
 
 ### 2. Climbing
 - `Climbable` marker component on trees/rocks (**Approved:** component rather than a Unity tag, so other data such as climb speed can live on it later).

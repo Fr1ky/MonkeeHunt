@@ -6,7 +6,14 @@ using UnityEngine;
 // Server: when a player finishes loading this scene, spawns the body prefab for their team
 // inside that team's SpawnArea and gives them ownership.
 // A team with no prefab (e.g. Unassigned in the round) gets no body; that player spectates.
+// Lobby hub (swapBodyOnTeamChange): stepping onto a team square that uses a different prefab swaps the
+// body in place (e.g. a real monkey on the Monkeys square).
 public class TeamSpawner : PurrMonoBehaviour {
+
+    private static readonly List<TeamSpawner> All = new();
+
+    [SerializeField]
+    private bool swapBodyOnTeamChange;
 
     [SerializeField]
     private GameObject unassignedPrefab;
@@ -26,6 +33,27 @@ public class TeamSpawner : PurrMonoBehaviour {
     private readonly List<Vector3> usedPoints = new();
     private readonly HashSet<PlayerID> spawnedPlayers = new();
 
+    // PurrMonoBehaviour subscribes to the network events in these.
+    public override void OnEnable() {
+        base.OnEnable();
+        All.Add(this);
+    }
+
+    public override void OnDisable() {
+        base.OnDisable();
+        All.Remove(this);
+    }
+
+    // Server: the player's team just changed (hub team square). Swaps the body if this scene's spawner
+    // does that and the new team uses a different prefab.
+    public static void TeamChangedServer(PlayerInfo info) {
+        foreach (var spawner in All) {
+            if (spawner.swapBodyOnTeamChange && spawner.gameObject.scene == info.gameObject.scene) {
+                spawner.SwapBody(info);
+                return;
+            }
+        }
+    }
     public override void Subscribe(NetworkManager manager, bool asServer) {
         if (!asServer || !manager.TryGetModule(out ScenePlayersModule scenePlayers, true)) {
             return;
@@ -61,13 +89,8 @@ public class TeamSpawner : PurrMonoBehaviour {
         }
 
         var entry = MatchSession.GetOrAdd(player);
-        var team = entry.Team;
-        var prefab = team switch {
-            Team.Hunters => hunterPrefab,
-            Team.Monkeys => monkeyPrefab,
-            _ => unassignedPrefab
-        };
-        var area = FindArea(team);
+        var prefab = PrefabFor(entry.Team);
+        var area = FindArea(entry.Team);
         if (!prefab || !area) {
             return;
         }
@@ -76,7 +99,33 @@ public class TeamSpawner : PurrMonoBehaviour {
         usedPoints.Add(position);
         var lookAtCentre = Vector3.ProjectOnPlane(-position, Vector3.up);
         var rotation = lookAtCentre.sqrMagnitude > 0.01f ? Quaternion.LookRotation(lookAtCentre) : Quaternion.identity;
+        SpawnBody(player, entry, prefab, position, rotation);
+    }
 
+    // Server: replaces the player's body with their team's prefab where it stands, facing the same way.
+    private void SwapBody(PlayerInfo info) {
+        if (!info.owner.HasValue) {
+            return;
+        }
+        var player = info.owner.Value;
+        var entry = MatchSession.GetOrAdd(player);
+        var prefab = PrefabFor(entry.Team);
+        var old = info.gameObject;
+        if (!prefab || old.name == prefab.name || old.name == prefab.name + "(Clone)") {
+            return;
+        }
+        var view = old.transform.Find("Visualisation");
+        var yaw = (view ? view : old.transform).eulerAngles.y;
+        var position = old.transform.position;
+        if (old.TryGetComponent(out NetworkIdentity oldIdentity)) {
+            oldIdentity.Despawn();
+        }
+        SpawnBody(player, entry, prefab, position, Quaternion.Euler(0f, yaw, 0f));
+    }
+
+    private void SpawnBody(PlayerID player, MatchSession.PlayerEntry entry, GameObject prefab, Vector3 position,
+        Quaternion rotation) {
+        var networkManager = NetworkManager.main;
         var body = UnityProxy.Instantiate(prefab, position, rotation, gameObject.scene);
         if (!body.TryGetComponent(out NetworkIdentity identity)) {
             return;
@@ -91,12 +140,20 @@ public class TeamSpawner : PurrMonoBehaviour {
         }
 
         if (body.TryGetComponent(out PlayerHealth health)) {
-            health.Initialize(settings.HealthFor(team));
+            health.Initialize(settings.HealthFor(entry.Team));
             var round = RoundController.Instance;
             if (round) {
-                round.RegisterParticipant(team, health);
+                round.RegisterParticipant(entry.Team, health);
             }
         }
+    }
+
+    private GameObject PrefabFor(Team team) {
+        return team switch {
+            Team.Hunters => hunterPrefab,
+            Team.Monkeys => monkeyPrefab,
+            _ => unassignedPrefab
+        };
     }
 
     private SpawnArea FindArea(Team team) {

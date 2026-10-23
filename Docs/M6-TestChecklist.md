@@ -6,7 +6,7 @@ Everything here was checked as host with stand-in bodies, but never with real pl
 - Host in the editor, the others join `127.0.0.1` port `5000` (Multiplayer Play Mode virtual players or a build).
 - Lobby: step onto the team squares. One hunter should put a **Cage** in a slot at the loadout rack (select the slot with 1–5, look at the cage on the rack, press E) for the key tests.
 - The host starts the round at the **host console**.
-- Handy numbers: monkey ~0.55 m tall, eye height ~0.45 m, jumps ~2.5 m high (since the M9 feel pass); hunter head top ~1.8 m off the ground. A monkey can reach a hunter's head with a jump from close by, or drop from trees and boulders.
+- Handy numbers: monkey ~0.55 m tall, eye height ~0.45 m, jumps ~3.25 m high (since 2026-10-23); hunter head top ~1.8 m off the ground. A monkey can reach a hunter's head with a jump from close by, or drop from trees and boulders.
 - Keys: **Space** = jump (mount by landing on a head, hop off while riding), **WASD** = steer while riding, **look the shown way, then back to center** = shake-off, **X** = wipe poop, **F8** = free yourself from a net (editor / dev builds).
 
 ---
@@ -47,7 +47,7 @@ Everything here was checked as host with stand-in bodies, but never with real pl
 - How hard the mount is: feet must land within the top 0.15 m of the head and within 0.3 m of its centre line.
 - Steering mix: rider 1.0 vs hunter 0.6. Does the hunter feel able to fight back?
 - Shake-off: 8 directions, each a look ~150 px of mouse travel from center, then back within ~50 px. Too easy, too hard, or picking up wrong directions?
-- The smaller monkey (0.55 m, ~2.5 m jumps): easy enough to spot and hit for hunters? Too easy to reach heads?
+- The smaller monkey (0.55 m, ~3.25 m jumps): easy enough to spot and hit for hunters? Too easy to reach heads?
 - Hop off: 4 m/s forward + 3 m/s up. Thrown off: 5 m/s away + 4 m/s up, ±45°.
 - Hands overlay: coverage (~80%), how often the gaps open, colour.
 - Whether the rider trails behind the hunter's head over the network (same glue approach as carrying).

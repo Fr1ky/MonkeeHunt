@@ -6,6 +6,7 @@ using UnityEngine;
 // Like hunter guns, the thrower's copy decides what it hit; everyone else sees a cosmetic copy.
 // Landing effects: poop = splat on whoever it hits; rock = noise + flinch on a hunter;
 // peel / decoy = networked object on the ground where it lands.
+// Hub (no round): throws only affect the test dummies; peels and decoys just puff where they land.
 public class MonkeyThrow : NetworkBehaviour {
 
     [SerializeField]
@@ -101,6 +102,10 @@ public class MonkeyThrow : NetworkBehaviour {
         if (!this || !isSpawned) {
             return;
         }
+        if (HunterLoadout.InHub) {
+            OnHubThrowLanded(item, hitCollider, point);
+            return;
+        }
         switch (item) {
             case MonkeyItem.Poop:
                 var splatTarget = hitCollider.GetComponentInParent<SplatStatus>();
@@ -127,6 +132,25 @@ public class MonkeyThrow : NetworkBehaviour {
                     ReportRockHit(target);
                 }
                 break;
+        }
+    }
+
+    // Hub practice: dummies react to poop and rocks, rocks still make their noise, nothing else happens.
+    private void OnHubThrowLanded(MonkeyItem item, Collider hitCollider, Vector3 point) {
+        if (item == MonkeyItem.Rock) {
+            RockLanded(point);
+        }
+        var dummy = hitCollider.GetComponentInParent<TestDummy>();
+        if (dummy && (item == MonkeyItem.Poop || item == MonkeyItem.Rock)) {
+            HitMarkerHud.Show(HitMarkerKind.Hit);
+            ReportDummyThrowHit(dummy, (int)item);
+        }
+    }
+
+    [ServerRpc]
+    private void ReportDummyThrowHit(NetworkIdentity dummyIdentity, int item) {
+        if (dummyIdentity && dummyIdentity.TryGetComponent(out TestDummy dummy)) {
+            dummy.ThrowHitServer((MonkeyItem)item);
         }
     }
 

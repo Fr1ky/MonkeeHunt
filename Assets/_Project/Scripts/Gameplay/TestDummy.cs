@@ -8,6 +8,7 @@ using UnityEngine;
 // - Rifle: "-5" and the running damage total.
 // - Tranq: "Tranq 2/4", "ASLEEP" at 4 stacks.
 // - Net: a net over it and "NETTED".
+// - Monkey throws (hub practice): "Splat x2" for poop, "Rock x1" for rocks.
 // Every hit flashes the body briefly.
 public class TestDummy : NetworkBehaviour {
 
@@ -50,6 +51,12 @@ public class TestDummy : NetworkBehaviour {
 
     [SerializeField]
     private SyncVar<bool> netted = new(false);
+
+    [SerializeField]
+    private SyncVar<int> splats = new(0);
+
+    [SerializeField]
+    private SyncVar<int> rockHits = new(0);
 
     // Counts hits so every peer can flash on each one.
     [SerializeField]
@@ -102,12 +109,31 @@ public class TestDummy : NetworkBehaviour {
         return downed;
     }
 
+    // Server: a monkey's poop or rock hit the dummy.
+    public void ThrowHitServer(MonkeyItem item) {
+        if (!isServer) {
+            return;
+        }
+        if (item == MonkeyItem.Poop) {
+            splats.value++;
+        } else if (item == MonkeyItem.Rock) {
+            rockHits.value++;
+        } else {
+            return;
+        }
+        hitCount.value++;
+        resetAtServer = Time.time + resetSeconds;
+    }
+
     private void Update() {
-        if (isServer && Time.time >= resetAtServer && (damageTotal.value != 0 || stacks.value != 0 || netted.value)) {
+        if (isServer && Time.time >= resetAtServer
+            && (damageTotal.value != 0 || stacks.value != 0 || netted.value || splats.value != 0 || rockHits.value != 0)) {
             damageTotal.value = 0;
             lastDamage.value = 0;
             stacks.value = 0;
             netted.value = false;
+            splats.value = 0;
+            rockHits.value = 0;
         }
         if (netVisual && netVisual.activeSelf != netted.value) {
             netVisual.SetActive(netted.value);
@@ -129,6 +155,12 @@ public class TestDummy : NetworkBehaviour {
         }
         if (netted.value) {
             text += "NETTED\n";
+        }
+        if (splats.value > 0) {
+            text += $"Splat x{splats.value}\n";
+        }
+        if (rockHits.value > 0) {
+            text += $"Rock x{rockHits.value}\n";
         }
         text = text.Length > 0 ? text.TrimEnd('\n') : idleText;
         if (text != shownText) {

@@ -52,7 +52,8 @@ One team plays **hunters** with guns, nets and gadgets. The other team plays an 
 - **Player name:** typed in a field in the MainMenu. Name, IP and port are **saved on this PC** between sessions (with the loadout and settings). Steam names come later.
 - **Lobby hub:** a small **walkable 3D room**.
   - **Team squares:** step onto the Hunters, Monkeys or **Spectate** square to pick that side. Your choice **stays** after you step off and only changes when you step onto another square. New players start unassigned (spectator) until they pick.
-  - **Hub body:** a neutral capsule that **takes on the Hunter or Monkey look** for the side you picked.
+  - **Hub body:** a hunter-sized capsule while unassigned or on the Hunters side (the hunter kit works only on the Hunters side). Stepping onto the **Monkeys** square swaps you **in place to a real monkey body** (same size, speed, jump and kit as in a round); stepping back swaps you back.
+  - **Monkey corner:** two climbable trees with a vine swing line, a rock pile, a fruit bush and a banana plant. Hub monkeys practise under hub rules: throws only affect the test dummies (poop "Splat", rock "Rock"), peels and decoys aren't placed, and throwing or eating never uses anything up.
   - **Host console:** the host walks to it and presses Interact to open the settings (enemy type, round timer) and **Start**.
 - **Start rule:** the host can start **anytime, with no limits**, even with an empty side (for solo testing).
 - **Spectators** (Spectate square, or never picked) **spectate** the round at start (free pick of anyone).
@@ -222,7 +223,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 
 ### 7.1 Movement
 - **Body:** much smaller than hunters (**~0.55 m** tall) with a low eye height (**~0.45 m**), so monkeys can hide behind low cover. Their step-up height is about 0.22 m, so higher ledges need a jump.
-- **Ground movement:** faster than hunters and jumps much higher (placeholder: another ×1.2 walk/sprint on top of the hunters' speed; a jump reaches **~2.5 m**, against a hunter's 1 m; tunable). Since M9 everyone moves 30% faster (hunters walk 5.5 / sprint 8 m/s, monkeys 6.6 / 9.6 m/s) and falls with heavier gravity, so jumps are snappy.
+- **Ground movement:** faster than hunters and jumps much higher (placeholder: another ×1.2 walk/sprint on top of the hunters' speed; a jump reaches **~3.25 m** (raised 30% on 2026-10-23), against a hunter's 1 m; tunable). Since M9 everyone moves 30% faster (hunters walk 5.5 / sprint 8 m/s, monkeys 6.6 / 9.6 m/s) and falls with heavier gravity, so jumps are snappy.
 - **Hunter speed** (for reference): everyone moves ×1.65 compared to the originally ported controller (walk 148.5, sprint bonus 66 in controller units).
 - **Sprint.**
 - **Climb (monkeys only):** works on any tree and rock tagged as climbable. **Jump while touching** a climbable surface to grab on. Then **W** climbs up, **S** down, **A/D** sideways, and **Jump** leaps off. Climbing is as fast as walking, and **Shift** sprints (same speeds as on the ground). The map borders are the limit for Proto 1.

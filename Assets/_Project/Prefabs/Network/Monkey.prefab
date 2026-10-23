@@ -148,7 +148,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: jumpHeight
-      value: 2.5
+      value: 3.25
       objectReference: {fileID: 0}
     - target: {fileID: 2794654284831933324, guid: c35d00f244d70e949bcc009cbbec6fa7, type: 3}
       propertyPath: sphereRadius

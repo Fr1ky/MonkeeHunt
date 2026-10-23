@@ -3,6 +3,7 @@ using UnityEngine;
 
 // Lobby hub floor square: stepping in puts you on this team (Unassigned = the Spectate square).
 // Leaving keeps your choice; only stepping into another square changes it. Only the server changes teams.
+// The hub's TeamSpawner then swaps the body if the team uses a different one (e.g. a monkey).
 public class TeamZone : MonoBehaviour {
 
     [SerializeField]
@@ -16,6 +17,7 @@ public class TeamZone : MonoBehaviour {
         var info = other.GetComponentInParent<PlayerInfo>();
         if (info) {
             info.SetTeam(team);
+            TeamSpawner.TeamChangedServer(info);
         }
     }
 }

@@ -17,6 +17,7 @@ public enum PickupType : byte {
 
 // Owner-side counts (like hunter ammo). Keys 1-4 / wheel select the throwable; F eats food:
 // +3 poop, and a banana also gives a peel. Eats a banana first when there is room for its peel.
+// Hub (no round): starts like a round, but throwing and eating never use anything up.
 public class MonkeyInventory : MonoBehaviour {
 
     public const int SlotCount = 4;
@@ -124,8 +125,10 @@ public class MonkeyInventory : MonoBehaviour {
         if (counts[(int)item] <= 0) {
             return false;
         }
-        counts[(int)item]--;
-        OnChanged?.Invoke();
+        if (!HunterLoadout.InHub) {
+            counts[(int)item]--;
+            OnChanged?.Invoke();
+        }
         return true;
     }
 
@@ -167,12 +170,16 @@ public class MonkeyInventory : MonoBehaviour {
             return;
         }
         var peelRoom = Count(MonkeyItem.Peel) < peelMax;
+        // The hub keeps the food (practice).
+        var keepFood = HunterLoadout.InHub;
         if (bananas > 0 && (peelRoom || fruits == 0)) {
-            bananas--;
+            if (!keepFood) {
+                bananas--;
+            }
             if (peelRoom) {
                 counts[(int)MonkeyItem.Peel]++;
             }
-        } else {
+        } else if (!keepFood) {
             fruits--;
         }
         counts[(int)MonkeyItem.Poop] = Mathf.Min(poopMax, Count(MonkeyItem.Poop) + poopPerFood);
