@@ -1,0 +1,246 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fb5a13e41a18f04281445c61abfb69e, type: 3}
+  m_Name: JungleArenaLayout
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::JungleArenaLayout
+  seed: 1234
+  radius: 200
+  wallHeight: 15
+  capHeight: 40
+  bumpHeight: 0.6
+  bumpScale: 0.025
+  plateaus:
+  - name: North plateau
+    height: 10
+    outline:
+    - {x: -169, y: 107}
+    - {x: -117, y: 90}
+    - {x: -62, y: 79}
+    - {x: -7, y: 93}
+    - {x: 55, y: 83}
+    - {x: 110, y: 97}
+    - {x: 169, y: 107}
+    - {x: 260, y: 107}
+    - {x: 260, y: 260}
+    - {x: -260, y: 260}
+    - {x: -260, y: 107}
+    cliffLine:
+    - {x: -169, y: 107}
+    - {x: -117, y: 90}
+    - {x: -62, y: 79}
+    - {x: -7, y: 93}
+    - {x: 55, y: 83}
+    - {x: 110, y: 97}
+    - {x: 169, y: 107}
+  - name: East ridge
+    height: 6
+    outline:
+    - {x: 124, y: -157}
+    - {x: 97, y: -117}
+    - {x: 79, y: -62}
+    - {x: 124, y: -48}
+    - {x: 188, y: -73}
+    - {x: 260, y: -90}
+    - {x: 260, y: -260}
+    - {x: 140, y: -260}
+    cliffLine:
+    - {x: 124, y: -157}
+    - {x: 97, y: -117}
+    - {x: 79, y: -62}
+    - {x: 124, y: -48}
+    - {x: 188, y: -73}
+  ramps:
+  - low: {x: -120, y: 62}
+    high: {x: -158, y: 112}
+    lowHeight: 0
+    highHeight: 10
+    width: 8
+  - low: {x: 122, y: 62}
+    high: {x: 160, y: 112}
+    lowHeight: 0
+    highHeight: 10
+    width: 8
+  - low: {x: 66, y: -140}
+    high: {x: 108, y: -118}
+    lowHeight: 0
+    highHeight: 6
+    width: 8
+  river:
+  - {x: -225, y: 28}
+  - {x: -180, y: 34}
+  - {x: -140, y: 30}
+  - {x: -105, y: 16}
+  - {x: -70, y: 8}
+  - {x: -35, y: 8}
+  - {x: 0, y: 0}
+  - {x: 35, y: -14}
+  - {x: 70, y: -24}
+  - {x: 110, y: -20}
+  - {x: 160, y: -10}
+  - {x: 225, y: -14}
+  riverWidth: 12
+  riverDepth: 0.4
+  bankWidth: 4
+  ford: {x: -110, y: 18}
+  fordLength: 14
+  fordDepth: 0.1
+  stoneBridge: {x: 0, y: 0}
+  stoneBridgeLength: 22
+  stoneBridgeWidth: 6
+  logBridge: {x: 118, y: -18}
+  logBridgeLength: 20
+  ruinsCenter: {x: 0, y: 0}
+  ruinsRadius: 45
+  campCenter: {x: 0, y: -160}
+  campRadius: 36
+  denCenter: {x: 0, y: 158}
+  denRadius: 20
+  forests:
+  - name: West jungle
+    center: {x: -141, y: -52}
+    radii: {x: 52, y: 61}
+    trees: 55
+    bushes: 70
+    bigShare: 0.25
+  - name: North canopy west
+    center: {x: -62, y: 145}
+    radii: {x: 79, y: 34}
+    trees: 45
+    bushes: 45
+    bigShare: 0.25
+  - name: North canopy east
+    center: {x: 72, y: 146}
+    radii: {x: 72, y: 34}
+    trees: 40
+    bushes: 40
+    bigShare: 0.25
+  - name: South-west grove
+    center: {x: -76, y: -134}
+    radii: {x: 50, y: 33}
+    trees: 28
+    bushes: 30
+    bigShare: 0.25
+  - name: East forest
+    center: {x: 110, y: 41}
+    radii: {x: 50, y: 31}
+    trees: 28
+    bushes: 30
+    bigShare: 0.25
+  - name: South grove
+    center: {x: 45, y: -88}
+    radii: {x: 29, y: 21}
+    trees: 12
+    bushes: 15
+    bigShare: 0.25
+  loneTrees: 15
+  loneBushes: 60
+  treeSpacing: 4
+  vines:
+  - points:
+    - {x: -130, y: 140}
+    - {x: -60, y: 150}
+    - {x: 0, y: 178}
+    - {x: 60, y: 150}
+    - {x: 130, y: 140}
+  - points:
+    - {x: -66, y: 128}
+    - {x: -54, y: 60}
+    - {x: -60, y: 10}
+    - {x: -90, y: -35}
+  - points:
+    - {x: 103, y: 124}
+    - {x: 114, y: 62}
+    - {x: 95, y: 10}
+    - {x: 75, y: -40}
+    - {x: 50, y: -80}
+  - points:
+    - {x: -124, y: 0}
+    - {x: -131, y: -76}
+    - {x: -86, y: -117}
+    - {x: -60, y: -140}
+  - points:
+    - {x: 110, y: 21}
+    - {x: 124, y: -34}
+    - {x: 152, y: -83}
+  vineTreeSpacing: 16
+  swingSpacing: 4
+  swingHeight: 11.5
+  ladders:
+  - position: {x: -56, y: 79}
+    plateau: 0
+  - position: {x: 61, y: 83}
+    plateau: 0
+  - position: {x: 86, y: -84}
+    plateau: 1
+  boulders:
+  - position: {x: -121, y: -102}
+    size: 7
+  - position: {x: -102, y: -91}
+    size: 5
+  - position: {x: -103, y: -112}
+    size: 6
+  - position: {x: -132, y: -116}
+    size: 4.5
+  - position: {x: -112, y: -125}
+    size: 4
+  - position: {x: -90, y: -104}
+    size: 3.5
+  - position: {x: 40, y: 60}
+    size: 5
+  - position: {x: -30, y: -70}
+    size: 4
+  marshes:
+  - position: {x: -93, y: -21}
+    size: 14
+  - position: {x: 68, y: -43}
+    size: 12
+  - position: {x: -45, y: 28}
+    size: 10
+  rockPiles:
+  - {x: -99, y: 72}
+  - {x: 90, y: 72}
+  - {x: 36, y: 36}
+  - {x: 138, y: -95}
+  - {x: -90, y: -99}
+  - {x: -30, y: -48}
+  - {x: 150, y: -25}
+  - {x: -170, y: 30}
+  - {x: 0, y: 120}
+  - {x: -60, y: 108}
+  fruitBushes:
+  - {x: -112, y: -76}
+  - {x: 126, y: 23}
+  - {x: 48, y: 131}
+  - {x: 38, y: -97}
+  - {x: -150, y: -10}
+  - {x: -40, y: 140}
+  - {x: 100, y: 150}
+  - {x: -60, y: -110}
+  - {x: 20, y: -130}
+  - {x: 160, y: -60}
+  bananaTrees:
+  - {x: -146, y: -26}
+  - {x: 91, y: 47}
+  - {x: -74, y: -123}
+  - {x: -28, y: 150}
+  - {x: 50, y: -60}
+  - {x: -100, y: 50}
+  - {x: 140, y: 120}
+  - {x: 120, y: -130}
+  hunterSpawn: {x: 0, y: -158}
+  hunterSpawnSize: {x: 16, y: 8}
+  monkeySpawn: {x: 0, y: 156}
+  monkeySpawnSize: {x: 14, y: 8}
+  fog: 1
+  fogStart: 80
+  fogEnd: 300
+  fogColor: {r: 0.72, g: 0.78, b: 0.7, a: 1}

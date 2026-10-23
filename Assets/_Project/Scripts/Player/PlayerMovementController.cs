@@ -114,6 +114,39 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 
     private bool isClimbing;
 
+    // Wading (WaterZone): inside a zone with the body's root less than WadeRootHeight above that zone's water
+    // surface (so bridges over the water don't count): slowed by the zone's multiplier, no sprint, no jump.
+    private const float WadeRootHeight = 0.4f;
+    private static readonly object WaterSpeedSource = new();
+    private readonly Dictionary<object, float> waterZones = new();
+    private float wadeSpeedMultiplier = 1f;
+
+    public bool IsWading
+    {
+        get
+        {
+            foreach (var surface in waterZones.Values)
+            {
+                if (transform.position.y < surface + WadeRootHeight)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public void EnterWater(object zone, float surfaceHeight, float speedMultiplier)
+    {
+        waterZones[zone] = surfaceHeight;
+        wadeSpeedMultiplier = speedMultiplier;
+    }
+
+    public void ExitWater(object zone)
+    {
+        waterZones.Remove(zone);
+    }
+
     // Head-ride tug of war: a world-space push from the rider (flat, length 0-1) mixed with this
     // player's own input at ownInputWeight. No sprinting while steered.
     private bool steered;
@@ -134,7 +167,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     }
 
     // Sprint held while moving under the player's own control (not steered by a rider).
-    public bool SprintRequested => enabled && !locked && !blocked && !steered && !isClimbing
+    public bool SprintRequested => enabled && !locked && !blocked && !steered && !isClimbing && !IsWading
         && input.SprintHeld && input.Move.sqrMagnitude > 0.01f;
 
     public event System.Action OnJumped;
@@ -227,7 +260,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 
         if (movementVector.magnitude > 0)
         {
-            if (input.SprintHeld)
+            if (input.SprintHeld && !IsWading)
             {
                 movementVector.y = sprintingSpeedBonus;
             }
@@ -236,6 +269,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
     }
     private void FixedUpdate()
     {
+        SetSpeedMultiplier(WaterSpeedSource, IsWading ? wadeSpeedMultiplier : 1f);
         if (!isClimbing)
         {
             HandleFloating();
@@ -284,12 +318,12 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
         {
             currentCoyoteTime -= Time.deltaTime;
         }
-        if (input.JumpPressed)
+        if (input.JumpPressed && !IsWading)
         {
             lastJumpPressTime = Time.time;
         }
         var jumpQueued = Time.time - lastJumpPressTime <= jumpBufferTime;
-        if (jumpQueued && currentCoyoteTime >= 0 && canJump)
+        if (jumpQueued && !IsWading && currentCoyoteTime >= 0 && canJump)
         {
             var velocity = body.linearVelocity;
             velocity.y = JumpSpeed;

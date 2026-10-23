@@ -10,6 +10,7 @@ public static class PlaceholderTextures {
 
     private const string UiFolder = "Assets/_Project/Settings/Ui";
     private const string FxFolder = "Assets/_Project/Settings/Fx";
+    private const string GroundFolder = "Assets/_Project/Settings/Map/Textures";
 
     [MenuItem("MonkeeHunt/Generate Placeholder Textures")]
     public static void GenerateAll() {
@@ -20,8 +21,52 @@ public static class PlaceholderTextures {
         Write(UiFolder, "T_UiVignette", 256, 256, DamageVignette, true, false);
         Write(UiFolder, "T_UiHitArc", 256, 256, HitArc, true, false);
         Write(FxFolder, "T_FxSoftDot", 64, 64, SoftDot, false, true);
+        GenerateGroundTiles();
         AssetDatabase.Refresh();
-        Debug.Log("Placeholder textures written to " + UiFolder + " and " + FxFolder);
+        Debug.Log("Placeholder textures written to " + UiFolder + ", " + FxFolder + " and " + GroundFolder);
+    }
+
+    // Tileable ground textures for the arena terrain layers (colour baked in).
+    public static void GenerateGroundTiles() {
+        Ground("T_Ground_Grass", new Color(0.40f, 0.56f, 0.25f), new Color(0.30f, 0.45f, 0.18f), 11);
+        Ground("T_Ground_Jungle", new Color(0.26f, 0.33f, 0.16f), new Color(0.33f, 0.27f, 0.15f), 12);
+        Ground("T_Ground_Mud", new Color(0.36f, 0.27f, 0.18f), new Color(0.27f, 0.2f, 0.13f), 13);
+        Ground("T_Ground_Sand", new Color(0.78f, 0.69f, 0.47f), new Color(0.66f, 0.57f, 0.37f), 14);
+        Ground("T_Ground_Rock", new Color(0.5f, 0.48f, 0.44f), new Color(0.36f, 0.35f, 0.32f), 15);
+    }
+
+    private static void Ground(string name, Color a, Color b, int seed) {
+        var noise = TileNoise(seed);
+        Write(GroundFolder, name, 128, 128, (u, v) => Color.Lerp(a, b, noise(u, v)), false, true, TextureWrapMode.Repeat);
+    }
+
+    // Two octaves of value noise on a wrapping grid, so the texture tiles seamlessly. Returns 0..1.
+    private static Func<float, float, float> TileNoise(int seed) {
+        var rng = new System.Random(seed);
+        var coarse = new float[8, 8];
+        var fine = new float[32, 32];
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                coarse[x, y] = (float)rng.NextDouble();
+            }
+        }
+        for (int y = 0; y < 32; y++) {
+            for (int x = 0; x < 32; x++) {
+                fine[x, y] = (float)rng.NextDouble();
+            }
+        }
+        return (u, v) => Mathf.Clamp01(0.65f * Sample(coarse, 8, u, v) + 0.35f * Sample(fine, 32, u, v));
+    }
+
+    private static float Sample(float[,] grid, int n, float u, float v) {
+        var x = u * n;
+        var y = v * n;
+        var x0 = Mathf.FloorToInt(x);
+        var y0 = Mathf.FloorToInt(y);
+        var tx = Mathf.SmoothStep(0f, 1f, x - x0);
+        var ty = Mathf.SmoothStep(0f, 1f, y - y0);
+        float At(int ix, int iy) => grid[((ix % n) + n) % n, ((iy % n) + n) % n];
+        return Mathf.Lerp(Mathf.Lerp(At(x0, y0), At(x0 + 1, y0), tx), Mathf.Lerp(At(x0, y0 + 1), At(x0 + 1, y0 + 1), tx), ty);
     }
 
     // Opacity of a splat at its edge; the centre is fully opaque and it fades gradually in between.
@@ -113,7 +158,7 @@ public static class PlaceholderTextures {
 
     // pixel(u, v) gets the pixel centre in 0..1 (v = 0 at the bottom).
     private static void Write(string folder, string name, int width, int height, Func<float, float, Color> pixel,
-        bool sprite, bool mipmaps) {
+        bool sprite, bool mipmaps, TextureWrapMode wrap = TextureWrapMode.Clamp) {
         Directory.CreateDirectory(folder);
         var tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
         for (int y = 0; y < height; y++) {
@@ -133,7 +178,7 @@ public static class PlaceholderTextures {
         }
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = mipmaps;
-        importer.wrapMode = TextureWrapMode.Clamp;
+        importer.wrapMode = wrap;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.SaveAndReimport();
     }

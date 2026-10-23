@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-// Host-only match settings panel: enemy type, round time, Start.
+// Host-only match settings panel: map, enemy type, round time, Start.
 // Start writes the settings into MatchSession and loads the round scene for everyone.
 public class HostConsoleUI : MonoBehaviour {
 
@@ -34,8 +34,15 @@ public class HostConsoleUI : MonoBehaviour {
     [SerializeField]
     private float hintDuration = 2f;
 
+    // Round maps: scene names and the names shown in the Map dropdown (same order, first = default).
     [SerializeField]
-    private string roundSceneName = "Blockout";
+    private TMP_Dropdown mapDropdown;
+
+    [SerializeField]
+    private string[] mapScenes = { "JungleArena", "Blockout" };
+
+    [SerializeField]
+    private string[] mapNames = { "Jungle arena", "Blockout (test map)" };
 
     private readonly List<EnemyType> enemyTypes = new();
     private PlayerNetworkController user;
@@ -49,6 +56,8 @@ public class HostConsoleUI : MonoBehaviour {
             labels.Add(EnemyTypeInfo.DisplayName(type));
         }
         enemyDropdown.AddOptions(labels);
+        mapDropdown.ClearOptions();
+        mapDropdown.AddOptions(new List<string>(mapNames));
         roundMinutesField.contentType = TMP_InputField.ContentType.IntegerNumber;
         panel.SetActive(false);
         hintText.gameObject.SetActive(false);
@@ -72,6 +81,7 @@ public class HostConsoleUI : MonoBehaviour {
     public void Open(PlayerNetworkController player) {
         user = player;
         enemyDropdown.SetValueWithoutNotify(Mathf.Max(0, enemyTypes.IndexOf(MatchSession.EnemyType)));
+        mapDropdown.SetValueWithoutNotify(Mathf.Clamp(MatchSession.MapIndex, 0, mapScenes.Length - 1));
         roundMinutesField.text = Mathf.RoundToInt(MatchSession.RoundTimeSeconds / 60f).ToString();
         OnEnemyChanged(enemyDropdown.value);
         if (!panel.activeSelf) {
@@ -126,7 +136,8 @@ public class HostConsoleUI : MonoBehaviour {
         }
         MatchSession.EnemyType = enemyTypes[enemyDropdown.value];
         MatchSession.RoundTimeSeconds = minutes * 60f;
+        MatchSession.MapIndex = Mathf.Clamp(mapDropdown.value, 0, mapScenes.Length - 1);
         Close();
-        networkManager.sceneModule.LoadSceneAsync(roundSceneName);
+        networkManager.sceneModule.LoadSceneAsync(mapScenes[MatchSession.MapIndex]);
     }
 }

@@ -22,6 +22,13 @@ public class SpawnArea : MonoBehaviour {
     [SerializeField]
     private LayerMask blockingLayers;
 
+    // Uneven ground (terrain): each point is dropped onto whatever is below it (within groundSearch).
+    [SerializeField]
+    private LayerMask groundLayers = 1;
+
+    [SerializeField]
+    private float groundSearch = 20f;
+
     public Team Team => team;
 
     // usedPoints: points already handed out this spawn wave (bodies there may not have moved into physics yet).
@@ -29,13 +36,21 @@ public class SpawnArea : MonoBehaviour {
         var best = transform.position + Vector3.up * spawnHeight;
         for (int i = 0; i < maxAttempts; i++) {
             var local = new Vector3(Random.Range(-0.5f, 0.5f) * size.x, 0f, Random.Range(-0.5f, 0.5f) * size.z);
-            var point = transform.TransformPoint(local) + Vector3.up * spawnHeight;
+            var point = OnGround(transform.TransformPoint(local)) + Vector3.up * spawnHeight;
             best = point;
             if (IsClear(point, usedPoints)) {
                 return point;
             }
         }
         return best;
+    }
+
+    private Vector3 OnGround(Vector3 point) {
+        if (Physics.Raycast(point + Vector3.up * groundSearch, Vector3.down, out var hit, groundSearch * 2f, groundLayers,
+                QueryTriggerInteraction.Ignore)) {
+            return hit.point;
+        }
+        return point;
     }
 
     private bool IsClear(Vector3 point, List<Vector3> usedPoints) {

@@ -29,6 +29,9 @@ public static class MatchSession {
     public static EnemyType EnemyType = EnemyType.Monkey;
     public static float RoundTimeSeconds = 600f;
 
+    // Index into the host console's map list (0 = the default map).
+    public static int MapIndex;
+
     public static PlayerEntry GetOrAdd(PlayerID player) {
         if (!players.TryGetValue(player, out var entry)) {
             entry = new PlayerEntry { Name = "Player " + player.id, Team = Team.Unassigned };
@@ -45,5 +48,6 @@ public static class MatchSession {
         players.Clear();
         EnemyType = EnemyType.Monkey;
         RoundTimeSeconds = defaultRoundSeconds;
+        MapIndex = 0;
     }
 }
