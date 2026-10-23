@@ -38,7 +38,7 @@ Checked as host in the lobby hub, but never with real keys or with several playe
 - [ ] **Red flash:** the screen edges flash red when you lose health (stronger for bigger hits, e.g. a peel trip).
 - [ ] **Arc:** a red arc around the crosshair points to where the shot or throw came from, and keeps pointing there while you turn.
 - [ ] **Sounds:** a thud on gun and rock hits, a squelch on poop.
-- [ ] **Poop:** splats are big and 70% see-through; "Hold X to wipe" shows above the crosshair while splatted, the wipe bar replaces it while you hold X, and it's gone once clean. Hidden while the Esc menu is open.
+- [ ] **Poop:** splats are big, solid in the centre and see-through (70%) towards the edges; "Hold X to wipe" shows above the crosshair while splatted, the wipe bar replaces it while you hold X, and it's gone once clean. Hidden while the Esc menu is open.
 - [ ] **UI unchanged after the prefab conversion:** hub hint line, quicksand bar, Esc settings panel and sliders, minigame arrows and the walkie code panel, binocular mask and tranq vignette all look and work as before.
 
 ## E. Gameplay sounds (needs a round)

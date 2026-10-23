@@ -24,6 +24,9 @@ public static class PlaceholderTextures {
         Debug.Log("Placeholder textures written to " + UiFolder + " and " + FxFolder);
     }
 
+    // Opacity of a splat at its edge; the centre is fully opaque and it fades gradually in between.
+    private const float SplatEdgeOpacity = 0.7f;
+
     // Lumpy round poop blob with a few drips running down.
     private static Func<float, float, Color> SplatBlob(int size) {
         var rng = new System.Random(1234);
@@ -43,7 +46,10 @@ public static class PlaceholderTextures {
             var drip = Mathf.Max(0f, Mathf.Sin(dx * 9f + 1.3f)) * Mathf.Clamp01(-dy) * 0.35f;
             var d = Mathf.Sqrt(dx * dx + dy * dy);
             var edge = radius + (dy < 0f ? drip : 0f);
-            return White(Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(edge - 0.06f, edge + 0.02f, d)));
+            var shape = Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(edge - 0.06f, edge + 0.02f, d));
+            // Solid in the middle, see-through towards the (lumpy) edge.
+            var opacity = Mathf.Lerp(1f, SplatEdgeOpacity, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(d / edge)));
+            return White(shape * opacity);
         };
     }
 

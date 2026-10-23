@@ -21,9 +21,9 @@ public class SplatOverlay : MonoBehaviour {
     [SerializeField]
     private Image wipeFill;
 
-    // The alpha is the opacity of a fresh splat (wiping fades it from there).
+    // The splat texture itself fades from opaque in the centre to 70% at the edges; wiping fades the alpha.
     [SerializeField]
-    private Color blobColor = new Color(0.33f, 0.2f, 0.08f, 0.7f);
+    private Color blobColor = new Color(0.33f, 0.2f, 0.08f, 1f);
 
     private void Awake() {
         foreach (var image in blobs) {

@@ -2218,7 +2218,7 @@ MonoBehaviour:
   wipeHint: {fileID: 3301709802741417050}
   wipeRoot: {fileID: 7939408535473440441}
   wipeFill: {fileID: 1360317184374243086}
-  blobColor: {r: 0.33, g: 0.2, b: 0.08, a: 0.7}
+  blobColor: {r: 0.33, g: 0.2, b: 0.08, a: 1}
 --- !u!1 &1556036709062944476
 GameObject:
   m_ObjectHideFlags: 0

@@ -71,7 +71,7 @@
 ### 7. HUD
 - Monkey HUD: slot bar 1–4 with counts, poop bar (5 pips), food count, throw charge meter, wipe progress bar.
 - Hunter HUD also gets the wipe progress bar (hunters get splatted too).
-- **Changed 2026-10-23 (your call):** splats are bigger (45–80% of screen height, was 30–55%) and 70% opaque; a "Hold X to wipe" prompt shows above the crosshair while there's poop on screen, and the wipe bar moved there too (it used to overlap the minigame panels).
+- **Changed 2026-10-23 (your call):** splats are bigger (45–80% of screen height, was 30–55%), solid in the centre and fading to 70% opaque at the edges; a "Hold X to wipe" prompt shows above the crosshair while there's poop on screen, and the wipe bar moved there too (it used to overlap the minigame panels).
 
 ### 8. Blockout additions
 - 4–5 climbable "trees" (tall brown pillars) and 2 boulders, a line of 4 swing points between two trees, 3 rock piles, 3 fruit bushes and 2 banana trees (with bananas on the ground beneath).

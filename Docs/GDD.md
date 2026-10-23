@@ -239,7 +239,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 
 ### 7.3 Throwables
 - **Poop:** from the **poop bar** (5).
-  - A hit adds a **splat blob** at a random spot on the target's screen (45–80% of the screen height, 70% opaque so you still see a little through it). More hits = more of the screen covered. Splats **do not clear on their own**.
+  - A hit adds a **splat blob** at a random spot on the target's screen (45–80% of the screen height; solid in the centre, fading gradually to 70% opaque at the edges). More hits = more of the screen covered. Splats **do not clear on their own**.
   - **Hold X ~2 s** to wipe everything. Stopping early only fades the splats **partially**. While there's poop on your screen, a **"Hold X to wipe"** prompt shows above the crosshair (the wipe bar takes its place while you hold X).
   - Poop also splats **other monkeys** (friendly fire).
 - **Rocks:** picked up in the world and thrown to **make noise** where they land, as a decoy. Hitting a hunter gives a **tiny camera flinch**, no damage.
@@ -276,13 +276,23 @@ Several systems share one minigame: you press a sequence of directions with the 
 
 ## 8. Map — Proto 1: Jungle Arena
 
-- **Shape:** a circular arena.
-- **Center:** ruins with a river.
+- **Shape:** a circular arena, bounded by a cliff wall.
+- **Size (decided 2026-10-23):** about **400 m across**. Hunters sprint across in ~50 s, monkeys in ~40 s.
+- **Layout (decided 2026-10-23, from the top-down draft):**
+  - **River** from west to east through the centre, with a meander.
+  - **Ruins** in the centre on both banks, joined by a **stone bridge**. Also a **ford** in the west and a **fallen-log bridge** in the east.
+  - **North plateau** with ~10 m cliffs. The **monkey den** sits in its canopy forest.
+  - **Hunter camp** in an open clearing in the south.
+  - **East ridge** with ~6 m cliffs south of the river, and a **boulder field** in the south-west.
+  - **Dense jungle** with climbable trees in the west, north (plateau canopy), south-west, east and a small grove south of the ruins.
+  - **Vines** link the canopy and cross the river (monkey highways).
+  - **Quicksand marsh** on the river banks (by the ford, east of the ruins, north bank).
+  - **Banana trees, fruit bushes and rock piles** spread around the forests, cliffs and ruins.
+- **River (decided):** everyone can **wade anywhere at ~50% speed** (no sprint, no jump). The bridges and the ford are the fast ways across, and monkeys can also swing over on vines.
+- **Cliffs (decided):** monkeys climb any cliff face at full climbing speed. Hunters take the **ramps** (the long way round) or **ladders**, which are short but slow (~4 s up a 10 m cliff) and block shooting and switching items while on them.
 - **Verticality:** a vertical canopy layer for climbing and swinging.
-- **Features:** climbable trees and rocks, vines and swing points, quicksand patches, banana trees, fruit/food pickups, rock pickups.
-- **Spawns:** separate spawn areas for each team.
+- **Spawns:** monkeys at the den (north), hunters at the camp (south).
 - **Ambient fauna:** audio only for Proto 1. NPC wildlife comes later.
-- **Size:** roughly 1 km², or about 1 minute to cross edge to edge. To be decided once there's a working version.
 
 ---
 
@@ -345,7 +355,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 | M5 ✅ | Minigames & capture | Shared directional minigame, net escape, rescue, cages, keys and cage unlock |
 | M6 | Head-ride | Ride, view block, steering, resistance minigame, key stealing |
 | M7 | Hazards & resupply | Quicksand and teammate help, walkie-talkie helicopter resupply (banana trees and peels were done in M4) |
-| M8 | Jungle arena | Blockout of the circular map with ruins, river and canopy |
+| M8 | Jungle arena | Blockout of the circular map with ruins, river and canopy (layout, size, river and cliff rules decided 2026-10-23, GDD §8) |
 | M9 | Playtest polish | Audio, screen effects, tuning pass (part 1, the feel pass, built 2026-10-22: [M9-Plan.md](M9-Plan.md)) |
 
 Milestone order and grouping still need your sign-off.
@@ -367,4 +377,4 @@ Milestone order and grouping still need your sign-off.
 
 ## 14. Open Questions
 
-1. Balance numbers to tune once there's a working version: team distribution (placeholder 3 monkeys vs 5 hunters), map size (≈1 km² / 1 minute edge to edge), minigame lengths.
+1. Balance numbers to tune once there's a working version: team distribution (placeholder 3 monkeys vs 5 hunters), minigame lengths. (Map size was decided on 2026-10-23: ~400 m across.)
