@@ -28,7 +28,7 @@ public class SplatStatus : NetworkBehaviour {
 
     // Blob size as a fraction of screen height.
     [SerializeField]
-    private Vector2 sizeRange = new Vector2(0.3f, 0.55f);
+    private Vector2 sizeRange = new Vector2(0.45f, 0.8f);
 
     private readonly List<Blob> blobs = new();
 

@@ -239,8 +239,8 @@ Several systems share one minigame: you press a sequence of directions with the 
 
 ### 7.3 Throwables
 - **Poop:** from the **poop bar** (5).
-  - A hit adds a **splat blob** at a random spot on the target's screen. More hits = more of the screen covered. Splats **do not clear on their own**.
-  - **Hold X ~2 s** to wipe everything. Stopping early only fades the splats **partially**.
+  - A hit adds a **splat blob** at a random spot on the target's screen (45–80% of the screen height, 70% opaque so you still see a little through it). More hits = more of the screen covered. Splats **do not clear on their own**.
+  - **Hold X ~2 s** to wipe everything. Stopping early only fades the splats **partially**. While there's poop on your screen, a **"Hold X to wipe"** prompt shows above the crosshair (the wipe bar takes its place while you hold X).
   - Poop also splats **other monkeys** (friendly fire).
 - **Rocks:** picked up in the world and thrown to **make noise** where they land, as a decoy. Hitting a hunter gives a **tiny camera flinch**, no damage.
 - **Banana peels:** bananas **grow on banana trees** around the map and **lie on the ground** beneath them. Thrown peels **stay until someone steps on them**. A player who steps on one takes **20 damage** and their **body tips over** for **3 seconds**, then stands back up. Peels trip **monkeys too**.
@@ -293,6 +293,7 @@ Several systems share one minigame: you press a sequence of directions with the 
 - Screen effects: tranq "drunk" effect, poop splat, head-ride view block.
 - Minigame UI: shows the key sequence, plus the directional prompts for head-ride resistance.
 - **Hit feedback (M9):** getting hit flashes the screen edges red and shows a red arc pointing to the shooter or thrower, with a hurt thud (a squelch for poop). Sprinting widens the view ~6°.
+- **Placeholder textures:** generated in code (`MonkeeHunt > Generate Placeholder Textures`) into `Assets/_Project/Settings/Ui` (splat blob, tranq vignette, binocular mask, minigame arrow, damage vignette, hit arc) and `Settings/Fx` (particle dot). All HUD and menu parts are real objects in `HudCanvas.prefab` / `EscMenuCanvas.prefab`; nothing in the UI is built at runtime.
 - **Placeholder sounds (M9):** generated in code (`MonkeeHunt > Generate Placeholder Sounds`) into `Assets/_Project/Audio/Generated`: hit tick, kill confirm, hurt, squelch, impacts, tranq / net shots, jump / land, throw, rock clack, decoy screech. Replace the files with real sounds anytime.
 
 ---

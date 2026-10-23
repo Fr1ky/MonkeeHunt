@@ -1040,7 +1040,7 @@ MonoBehaviour:
   input: {fileID: 1086905395464011628}
   maxBlobs: 8
   wipeSeconds: 2
-  sizeRange: {x: 0.3, y: 0.55}
+  sizeRange: {x: 0.45, y: 0.8}
 --- !u!114 &217053246902491581
 MonoBehaviour:
   m_ObjectHideFlags: 0

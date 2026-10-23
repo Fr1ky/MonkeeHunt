@@ -30,12 +30,6 @@ public class DirectionMinigame : MonoBehaviour {
     private TMP_Text titleText;
 
     [SerializeField]
-    private RectTransform cellContainer;
-
-    [SerializeField]
-    private float cellSize = 56f;
-
-    [SerializeField]
     private Color pendingColor = new Color(0f, 0f, 0f, 0.55f);
 
     [SerializeField]
@@ -81,6 +75,31 @@ public class DirectionMinigame : MonoBehaviour {
     [SerializeField]
     private Color dimColor = new Color(0f, 0f, 0f, 0.2f);
 
+    [Header("HUD parts")]
+    // The arrow row: MaxLength cells, each with an arrow image.
+    [SerializeField]
+    private Image[] cells;
+
+    [SerializeField]
+    private RawImage[] arrows;
+
+    // Code panel: title, one label per row and MaxCodeRows x MaxLength cells, row by row
+    // (index = row * MaxLength + key).
+    [SerializeField]
+    private RectTransform codePanel;
+
+    [SerializeField]
+    private TMP_Text codeTitle;
+
+    [SerializeField]
+    private TMP_Text[] codeLabels;
+
+    [SerializeField]
+    private Image[] codeCells;
+
+    [SerializeField]
+    private RawImage[] codeArrows;
+
     private readonly int[] sequence = new int[MaxLength];
     private InputMode mode;
 
@@ -88,9 +107,6 @@ public class DirectionMinigame : MonoBehaviour {
     private Vector2 flickOffset;
     private bool flickCentered = true;
     private string baseTitle;
-    private Image[] cells;
-    private RawImage[] arrows;
-    private Texture2D arrowTexture;
 
     // Code entry.
     private bool codeMode;
@@ -98,11 +114,6 @@ public class DirectionMinigame : MonoBehaviour {
     private readonly int[][] codes = new int[MaxCodeRows][];
     private readonly bool[] rowAlive = new bool[MaxCodeRows];
     private Action<int> onCodeMatch;
-    private RectTransform codePanel;
-    private TMP_Text codeTitle;
-    private TMP_Text[] codeLabels;
-    private Image[,] codeCells;
-    private RawImage[,] codeArrows;
     private int length;
     private int progress;
     private bool active;
@@ -121,8 +132,8 @@ public class DirectionMinigame : MonoBehaviour {
 
     private void Awake() {
         Instance = this;
-        BuildCells();
         root.SetActive(false);
+        codePanel.gameObject.SetActive(false);
     }
 
     private void OnDestroy() {
@@ -159,9 +170,6 @@ public class DirectionMinigame : MonoBehaviour {
     // Starts a code entry with up to MaxCodeRows fixed codes (arrow keys). matched gets the row index.
     public void BeginCode(string title, IReadOnlyList<int[]> rowCodes, IReadOnlyList<string> rowLabels,
         IReadOnlyList<Color> rowColors, Action<int> matched, Action cancelled = null) {
-        if (!codePanel) {
-            BuildCodePanel();
-        }
         root.SetActive(false);
         codeRows = Mathf.Min(rowCodes.Count, MaxCodeRows);
         for (int r = 0; r < codeRows; r++) {
@@ -348,17 +356,17 @@ public class DirectionMinigame : MonoBehaviour {
             codeLabels[r].gameObject.SetActive(showRow);
             for (int i = 0; i < MaxLength; i++) {
                 var show = showRow && i < codes[r].Length;
-                codeCells[r, i].gameObject.SetActive(show);
+                codeCells[r * MaxLength + i].gameObject.SetActive(show);
                 if (!show) {
                     continue;
                 }
-                codeCells[r, i].color = flashing ? wrongColor
+                codeCells[r * MaxLength + i].color = flashing ? wrongColor
                     : !rowAlive[r] ? dimColor
                     : i < progress ? doneColor
                     : i == progress ? currentColor
                     : pendingColor;
-                codeArrows[r, i].rectTransform.localEulerAngles = new Vector3(0f, 0f, -90f * codes[r][i]);
-                codeArrows[r, i].color = rowAlive[r] || flashing ? Color.white : new Color(1f, 1f, 1f, 0.3f);
+                codeArrows[r * MaxLength + i].rectTransform.localEulerAngles = new Vector3(0f, 0f, -90f * codes[r][i]);
+                codeArrows[r * MaxLength + i].color = rowAlive[r] || flashing ? Color.white : new Color(1f, 1f, 1f, 0.3f);
             }
             if (showRow) {
                 var c = codeLabels[r].color;
@@ -368,61 +376,7 @@ public class DirectionMinigame : MonoBehaviour {
         }
     }
 
-    // Panel built in code under this object: title, then one row per code (label + arrow cells).
-    private void BuildCodePanel() {
-        var go = new GameObject("CodePanel", typeof(RectTransform));
-        codePanel = (RectTransform)go.transform;
-        codePanel.SetParent(transform, false);
-        codePanel.anchorMin = codePanel.anchorMax = new Vector2(0.5f, 0.5f);
-        var background = go.AddComponent<Image>();
-        if (root.TryGetComponent(out Image rootImage)) {
-            background.sprite = rootImage.sprite;
-            background.type = rootImage.type;
-            background.color = rootImage.color;
-        } else {
-            background.color = new Color(0f, 0f, 0f, 0.6f);
-        }
-        background.raycastTarget = false;
-
-        codeTitle = Instantiate(titleText, codePanel);
-        var trt = codeTitle.rectTransform;
-        trt.anchorMin = new Vector2(0f, 1f);
-        trt.anchorMax = new Vector2(1f, 1f);
-        trt.pivot = new Vector2(0.5f, 1f);
-        trt.sizeDelta = new Vector2(0f, 36f);
-        trt.anchoredPosition = new Vector2(0f, -6f);
-
-        codeLabels = new TMP_Text[MaxCodeRows];
-        codeCells = new Image[MaxCodeRows, MaxLength];
-        codeArrows = new RawImage[MaxCodeRows, MaxLength];
-        for (int r = 0; r < MaxCodeRows; r++) {
-            var label = Instantiate(titleText, codePanel);
-            label.alignment = TextAlignmentOptions.MidlineLeft;
-            var lrt = label.rectTransform;
-            lrt.anchorMin = lrt.anchorMax = lrt.pivot = new Vector2(0f, 1f);
-            lrt.sizeDelta = new Vector2(codeLabelWidth, codeCellSize);
-            codeLabels[r] = label;
-            for (int i = 0; i < MaxLength; i++) {
-                var cell = new GameObject("Code" + r + "_" + i, typeof(RectTransform));
-                var crt = (RectTransform)cell.transform;
-                crt.SetParent(codePanel, false);
-                crt.anchorMin = crt.anchorMax = crt.pivot = new Vector2(0f, 1f);
-                crt.sizeDelta = Vector2.one * codeCellSize;
-                codeCells[r, i] = cell.AddComponent<Image>();
-                codeCells[r, i].raycastTarget = false;
-                var arrow = new GameObject("Arrow", typeof(RectTransform));
-                var art = (RectTransform)arrow.transform;
-                art.SetParent(crt, false);
-                art.anchorMin = art.anchorMax = new Vector2(0.5f, 0.5f);
-                art.sizeDelta = Vector2.one * (codeCellSize * 0.7f);
-                codeArrows[r, i] = arrow.AddComponent<RawImage>();
-                codeArrows[r, i].texture = arrowTexture;
-                codeArrows[r, i].raycastTarget = false;
-            }
-        }
-        go.SetActive(false);
-    }
-
+    // Sizes the panel to the rows in use and places the labels and cells (row by row from the top).
     private void LayoutCodePanel() {
         const float pad = 14f;
         const float gap = 6f;
@@ -435,49 +389,9 @@ public class DirectionMinigame : MonoBehaviour {
             var y = -titleHeight - r * rowHeight;
             codeLabels[r].rectTransform.anchoredPosition = new Vector2(pad, y);
             for (int i = 0; i < MaxLength; i++) {
-                ((RectTransform)codeCells[r, i].transform).anchoredPosition =
+                codeCells[r * MaxLength + i].rectTransform.anchoredPosition =
                     new Vector2(pad + codeLabelWidth + i * (codeCellSize + gap), y);
             }
         }
-    }
-
-    private void BuildCells() {
-        arrowTexture = BuildArrowTexture(64);
-        cells = new Image[MaxLength];
-        arrows = new RawImage[MaxLength];
-        for (int i = 0; i < MaxLength; i++) {
-            var cell = new GameObject("Cell" + i, typeof(RectTransform));
-            cell.transform.SetParent(cellContainer, false);
-            ((RectTransform)cell.transform).sizeDelta = Vector2.one * cellSize;
-            var layout = cell.AddComponent<LayoutElement>();
-            layout.preferredWidth = layout.preferredHeight = cellSize;
-            cells[i] = cell.AddComponent<Image>();
-            cells[i].raycastTarget = false;
-
-            var arrow = new GameObject("Arrow", typeof(RectTransform));
-            arrow.transform.SetParent(cell.transform, false);
-            var art = (RectTransform)arrow.transform;
-            art.anchorMin = art.anchorMax = new Vector2(0.5f, 0.5f);
-            art.sizeDelta = Vector2.one * (cellSize * 0.7f);
-            arrows[i] = arrow.AddComponent<RawImage>();
-            arrows[i].texture = arrowTexture;
-            arrows[i].raycastTarget = false;
-        }
-    }
-
-    // White arrow pointing up (head + stem), transparent elsewhere.
-    private static Texture2D BuildArrowTexture(int size) {
-        var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
-        for (int y = 0; y < size; y++) {
-            for (int x = 0; x < size; x++) {
-                var u = (x + 0.5f) / size - 0.5f;
-                var v = (y + 0.5f) / size;
-                var head = v >= 0.5f && v <= 0.95f && Mathf.Abs(u) <= (0.95f - v) * 0.9f;
-                var stem = v >= 0.08f && v < 0.55f && Mathf.Abs(u) <= 0.12f;
-                tex.SetPixel(x, y, head || stem ? Color.white : Color.clear);
-            }
-        }
-        tex.Apply();
-        return tex;
     }
 }
